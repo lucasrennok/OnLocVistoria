@@ -1,0 +1,205 @@
+<div class="page wizard-page">
+  <div class="page-header">
+    <h1>Registro de devolução</h1>
+    <p-button label="Cancelar" icon="pi pi-times" text (click)="cancel()" />
+  </div>
+
+  <div class="steps">
+    @for (label of ['Identificação', 'Conferência', 'Evidências', 'Avaliação']; track $index; let i = $index) {
+      <div class="step-indicator" [class.active]="step() === i + 1" [class.done]="step() > i + 1">
+        <span class="step-num">{{ i + 1 }}</span>
+        <span class="step-label">{{ label }}</span>
+      </div>
+    }
+  </div>
+
+  <p-card>
+    @if (step() === 1) {
+      <div class="step-body">
+        <h2>1. Identificação</h2>
+        <p class="hint">Selecione o cliente e o empréstimo devolvido.</p>
+
+        <div class="field">
+          <label for="client">Cliente *</label>
+          <p-select
+            inputId="client"
+            [options]="clients()"
+            optionLabel="tradeName"
+            optionValue="id"
+            placeholder="Selecione o cliente"
+            [loading]="loadingClients()"
+            [(ngModel)]="selectedClientId"
+            (ngModelChange)="onClientChange($event)"
+            styleClass="w-full"
+          />
+        </div>
+
+        <div class="field">
+          <label for="loan">Empréstimo *</label>
+          <p-select
+            inputId="loan"
+            [options]="loans()"
+            optionLabel="organization"
+            optionValue="id"
+            placeholder="Selecione o empréstimo"
+            [loading]="loadingLoans()"
+            [disabled]="!selectedClientId"
+            [(ngModel)]="selectedLoanId"
+            styleClass="w-full"
+          />
+        </div>
+
+        @if (selectedLoan; as loan) {
+          <div class="summary">
+            <span class="summary-label">Organização</span>
+            <span>{{ loan.organization }}</span>
+            <span class="summary-label">Data do empréstimo</span>
+            <span>{{ loan.date | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        }
+      </div>
+    }
+
+    @if (step() === 2) {
+      <div class="step-body">
+        <h2>2. Conferência dos itens</h2>
+        <p class="hint">Marque os itens que foram devolvidos.</p>
+
+        <div class="items-list">
+          @for (item of selectedLoan?.items; track item.id) {
+            <div class="item-row">
+              <div class="item-meta">
+                <strong>{{ item.patrimonyNumber }}</strong>
+              </div>
+              <p-checkbox
+                [binary]="true"
+                [(ngModel)]="returnedItems[item.id]"
+                (ngModelChange)="toggleReturned(item.id, $event)"
+                [inputId]="'item-' + item.id"
+              />
+              <label [for]="'item-' + item.id">Devolvido</label>
+            </div>
+          } @empty {
+            <p class="empty">Este empréstimo não possui itens.</p>
+          }
+        </div>
+      </div>
+    }
+
+    @if (step() === 3) {
+      <div class="step-body">
+        <h2>3. Evidências</h2>
+        <p class="hint">Anexe fotos dos equipamentos (serão comprimidas automaticamente).</p>
+
+        <div class="upload-row">
+          <input #fileInput type="file" accept="image/*" multiple hidden (change)="onFilesSelected($event)" />
+          <p-button
+            type="button"
+            label="Adicionar fotos"
+            icon="pi pi-upload"
+            [loading]="compressing()"
+            (click)="fileInput.click()"
+          />
+          <span class="count">{{ photos().length }} foto(s)</span>
+        </div>
+
+        @if (photos().length) {
+          <div class="gallery">
+            @for (photo of photos(); track index; let index = $index) {
+              <div class="photo">
+                <img [src]="photo.url" alt="Evidência" />
+                <p-button
+                  icon="pi pi-times"
+                  text
+                  rounded
+                  severity="danger"
+                  title="Remover"
+                  (click)="removePhoto(index)"
+                />
+              </div>
+            }
+          </div>
+        }
+
+        <div class="field">
+          <label for="note">Observações</label>
+          <textarea id="note" pTextarea [(ngModel)]="note" rows="3" placeholder="Observações gerais…"></textarea>
+        </div>
+      </div>
+    }
+
+    @if (step() === 4) {
+      <div class="step-body">
+        <h2>4. Avaliação</h2>
+        <p class="hint">Avaliação: há avaria por mau uso?</p>
+
+        <div class="radio-row">
+          <p-radiobutton
+            inputId="assessment-sim"
+            value="avaria_por_mau_uso"
+            [(ngModel)]="assessment"
+          />
+          <label for="assessment-sim">Sim — há avaria por mau uso</label>
+        </div>
+        <div class="radio-row">
+          <p-radiobutton
+            inputId="assessment-nao"
+            value="sem_avaria"
+            [(ngModel)]="assessment"
+          />
+          <label for="assessment-nao">Não — sem avarias</label>
+        </div>
+
+        @if (assessment === 'avaria_por_mau_uso') {
+          <div class="damage-box">
+            <div class="field">
+              <label for="damageItem">Item avariado</label>
+              <p-select
+                inputId="damageItem"
+                [options]="selectedLoan?.items ?? []"
+                optionLabel="patrimonyNumber"
+                optionValue="id"
+                placeholder="Selecione o item"
+                [(ngModel)]="damageItemId"
+                styleClass="w-full"
+              />
+            </div>
+            <div class="field">
+              <label for="damageDescription">Descrição da avaria *</label>
+              <textarea
+                id="damageDescription"
+                pTextarea
+                [(ngModel)]="damageDescription"
+                rows="3"
+                placeholder="Descreva a avaria localizada…"
+              ></textarea>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </p-card>
+
+  <div class="wizard-actions">
+    @if (step() > 1) {
+      <p-button label="Voltar" icon="pi pi-arrow-left" severity="secondary" (click)="back()" />
+    }
+    @if (step() < 4) {
+      <p-button
+        label="Próximo"
+        icon="pi pi-arrow-right"
+        iconPos="right"
+        [disabled]="step() === 1 && !selectedLoanId"
+        (click)="next()"
+      />
+    }
+    @if (step() === 4) {
+      <p-button
+        label="Concluir vistoria"
+        icon="pi pi-check"
+        [loading]="submitting()"
+        (click)="submit()"
+      />
+    }
+  </div>
+</div>

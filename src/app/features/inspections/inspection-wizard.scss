@@ -1,0 +1,176 @@
+.wizard-page {
+  max-width: 860px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+.steps {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--p-surface-500);
+}
+
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--p-surface-200);
+  color: var(--p-surface-600);
+  font-weight: 600;
+}
+
+.step-indicator.active .step-num {
+  background: #16a34a;
+  color: #fff;
+}
+
+.step-indicator.done .step-num {
+  background: var(--p-surface-800);
+  color: #fff;
+}
+
+.step-indicator.active .step-label {
+  color: var(--p-surface-900);
+  font-weight: 600;
+}
+
+.step-body h2 {
+  margin: 0 0 0.25rem;
+}
+
+.hint {
+  color: var(--p-surface-500);
+  margin: 0 0 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--p-surface-700);
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.35rem 1rem;
+  background: var(--p-surface-50);
+  border: 1px solid var(--p-surface-200);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.summary-label {
+  color: var(--p-surface-500);
+  font-size: 0.85rem;
+}
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--p-surface-200);
+  border-radius: 8px;
+}
+
+.item-meta {
+  flex: 1;
+}
+
+.upload-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.count {
+  color: var(--p-surface-500);
+  font-size: 0.85rem;
+}
+
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.photo {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--p-surface-200);
+}
+
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo .p-button {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+}
+
+.radio-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.damage-box {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--p-red-200);
+  background: var(--p-red-50);
+  border-radius: 8px;
+}
+
+.empty {
+  color: var(--p-surface-500);
+}
+
+.wizard-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}

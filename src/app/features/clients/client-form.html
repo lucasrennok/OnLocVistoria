@@ -1,0 +1,82 @@
+<div class="page form-page">
+  <div class="page-header">
+    <h1>{{ formTitle }}</h1>
+    <p-button label="Voltar" icon="pi pi-arrow-left" text (click)="cancel()" />
+  </div>
+
+  <p-card>
+    @if (loading()) {
+      <div class="loading">
+        <p-progressSpinner styleClass="w-2rem h-2rem" />
+      </div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="form-grid">
+        <div class="field span-2">
+          <label for="tradeName">Nome fantasia *</label>
+          <input id="tradeName" pInputText type="text" formControlName="tradeName" />
+          @if (tradeName.invalid && tradeName.touched) {
+            <small class="error">Informe o nome fantasia.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="responsible">Responsável *</label>
+          <input id="responsible" pInputText type="text" formControlName="responsible" />
+          @if (responsible.invalid && responsible.touched) {
+            <small class="error">Informe o responsável.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="documentType">Tipo de documento *</label>
+          <p-select
+            id="documentType"
+            formControlName="documentType"
+            [options]="docTypes"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Selecione"
+          />
+        </div>
+
+        <div class="field">
+          <label for="document">CPF/CNPJ *</label>
+          <input
+            id="document"
+            pInputText
+            cpfCnpjMask
+            type="text"
+            inputmode="numeric"
+            formControlName="document"
+            placeholder="Somente números"
+          />
+          @if (document.hasError('cpfCnpj') && document.touched) {
+            <small class="error">Documento inválido.</small>
+          }
+          @if (document.hasError('documentTaken') && document.dirty) {
+            <small class="error">Este documento já está cadastrado.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="location">Localização *</label>
+          <input id="location" pInputText type="text" formControlName="location" />
+          @if (location.invalid && location.touched) {
+            <small class="error">Informe a localização.</small>
+          }
+        </div>
+
+        <div class="actions span-2">
+          <p-button type="button" label="Cancelar" severity="secondary" (click)="cancel()" />
+          <p-button
+            type="submit"
+            label="Salvar"
+            icon="pi pi-check"
+            [loading]="saving()"
+            [disabled]="form.pending"
+          />
+        </div>
+      </form>
+    }
+  </p-card>
+</div>

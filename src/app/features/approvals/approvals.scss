@@ -1,0 +1,59 @@
+.page-header {
+  margin-bottom: 1rem;
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--p-surface-500);
+}
+
+.detail h4 {
+  margin: 1rem 0 0.5rem;
+}
+
+.info-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.info-label {
+  min-width: 8rem;
+  color: var(--p-surface-500);
+  font-size: 0.85rem;
+}
+
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.gallery img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--p-surface-200);
+}
+
+.muted {
+  color: var(--p-surface-500);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}

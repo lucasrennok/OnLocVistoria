@@ -1,0 +1,86 @@
+.form-page {
+  max-width: 820px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--p-surface-700);
+}
+
+.span-2 {
+  grid-column: span 2;
+}
+
+.error {
+  color: var(--p-red-600);
+  font-size: 0.75rem;
+}
+
+.subitems {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--p-surface-200);
+  padding-top: 1rem;
+}
+
+.subitems-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.subitems-header h3 {
+  margin: 0;
+}
+
+.subitems-empty {
+  color: var(--p-surface-500);
+  font-size: 0.9rem;
+}
+
+.subitem-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.grow {
+  flex: 1;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}

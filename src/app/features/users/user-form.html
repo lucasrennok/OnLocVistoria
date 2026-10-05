@@ -1,0 +1,54 @@
+<div class="page form-page">
+  <div class="page-header">
+    <h1>Novo usuário</h1>
+    <p-button label="Voltar" icon="pi pi-arrow-left" text (click)="cancel()" />
+  </div>
+
+  <p-card>
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label for="name">Nome *</label>
+        <input id="name" pInputText type="text" formControlName="name" />
+        @if (name.invalid && name.touched) {
+          <small class="error">Informe o nome.</small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="email">E-mail *</label>
+        <input id="email" pInputText type="email" formControlName="email" />
+        @if (email.hasError('email') && email.touched) {
+          <small class="error">Informe um e-mail válido.</small>
+        }
+        @if (email.hasError('emailTaken') && email.dirty) {
+          <small class="error">Este e-mail já está cadastrado.</small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="role">Papel *</label>
+        <p-select
+          id="role"
+          formControlName="role"
+          [options]="roles"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Selecione"
+        />
+      </div>
+
+      <p class="hint">A senha será definida em um fluxo separado (tabela de senhas criptografadas).</p>
+
+      <div class="actions">
+        <p-button type="button" label="Cancelar" severity="secondary" (click)="cancel()" />
+        <p-button
+          type="submit"
+          label="Salvar"
+          icon="pi pi-check"
+          [loading]="saving()"
+          [disabled]="form.pending"
+        />
+      </div>
+    </form>
+  </p-card>
+</div>

@@ -1,0 +1,139 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Aprovações</h1>
+  </div>
+
+  <p-table
+    [value]="pending()"
+    [loading]="loading()"
+    styleClass="shadow-1"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Cliente</th>
+        <th>Empréstimo</th>
+        <th>Data</th>
+        <th>Avaliação</th>
+        <th style="width: 14rem">Ações</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-inspection>
+      <tr>
+        <td>{{ clientName(inspection.clientId) }}</td>
+        <td>{{ loanOrg(inspection.loanId) }}</td>
+        <td>{{ inspection.date | date: 'dd/MM/yyyy HH:mm' }}</td>
+        <td>
+          <p-tag
+            [value]="inspection.assessment === 'avaria_por_mau_uso' ? 'Com avaria' : 'Sem avaria'"
+            [severity]="inspection.assessment === 'avaria_por_mau_uso' ? 'danger' : 'success'"
+          />
+        </td>
+        <td>
+          <div class="actions">
+            <p-button
+              icon="pi pi-eye"
+              text
+              rounded
+              title="Ver detalhes"
+              (click)="viewDetails(inspection)"
+            />
+            <p-button
+              icon="pi pi-check"
+              label="Aprovar"
+              severity="success"
+              (click)="approve(inspection)"
+            />
+            <p-button
+              icon="pi pi-times"
+              label="Reprovar"
+              severity="danger"
+              text
+              (click)="reject(inspection)"
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5" class="empty">Nenhuma aprovação pendente.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog
+  header="Detalhes da vistoria"
+  [modal]="true"
+  [visible]="selected() !== null"
+  (onHide)="selected.set(null)"
+  styleClass="w-34rem"
+>
+  @if (selected(); as inspection) {
+    <div class="detail">
+      <div class="info-row">
+        <span class="info-label">Cliente</span>
+        <span>{{ clientName(inspection.clientId) }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Empréstimo</span>
+        <span>{{ loanOrg(inspection.loanId) }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Data da vistoria</span>
+        <span>{{ inspection.date | date: 'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Avaliação</span>
+        <span>{{ inspection.assessment === 'avaria_por_mau_uso' ? 'Com avaria' : 'Sem avaria' }}</span>
+      </div>
+
+      @if (loanFor(inspection.loanId); as loan) {
+        <h4>Itens emprestados</h4>
+        <p-table [value]="loan.items" styleClass="shadow-1">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Patrimônio</th>
+              <th>Devolvido</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-item>
+            <tr>
+              <td>{{ item.patrimonyNumber }}</td>
+              <td>
+                <p-tag [value]="item.returned ? 'Sim' : 'Não'" [severity]="item.returned ? 'success' : 'secondary'" />
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      }
+
+      @if (inspection.photos.length) {
+        <h4>Fotos</h4>
+        <div class="gallery">
+          @for (photo of inspection.photos; track $index) {
+            <img [src]="photo.url" alt="Evidência" />
+          }
+        </div>
+        @if (inspection.photos[0]?.note) {
+          <div class="info-row">
+            <span class="info-label">Observações</span>
+            <span>{{ inspection.photos[0].note }}</span>
+          </div>
+        }
+      } @else {
+        <p class="muted">Nenhuma foto anexada.</p>
+      }
+    </div>
+  }
+
+  <ng-template pTemplate="footer">
+    <div class="dialog-actions">
+      <p-button label="Fechar" text (click)="selected.set(null)" />
+      <p-button label="Reprovar" severity="danger" text (click)="rejectFromDialog()" />
+      <p-button label="Aprovar" severity="success" (click)="approveFromDialog()" />
+    </div>
+  </ng-template>
+</p-dialog>

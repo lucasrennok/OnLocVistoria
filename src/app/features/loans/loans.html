@@ -1,0 +1,65 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Empréstimos</h1>
+  </div>
+
+  <div class="toolbar">
+    <p-select
+      [options]="statusOptions"
+      optionLabel="label"
+      optionValue="value"
+      [formControl]="statusFilter"
+      placeholder="Status"
+      styleClass="w-12rem"
+    />
+    <p-select
+      [options]="clientOptions()"
+      optionLabel="label"
+      optionValue="value"
+      [formControl]="clientFilter"
+      placeholder="Cliente"
+      styleClass="w-18rem"
+    />
+  </div>
+
+  <p-table
+    [value]="loans()"
+    [loading]="loading()"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    styleClass="shadow-1"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Cliente</th>
+        <th>Organização</th>
+        <th>Data</th>
+        <th>Itens</th>
+        <th>Status</th>
+        <th style="width: 6rem">Ações</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-loan>
+      <tr>
+        <td>{{ clientName(loan.clientId) }}</td>
+        <td>{{ loan.organization }}</td>
+        <td>{{ loan.date | date: 'dd/MM/yyyy HH:mm' }}</td>
+        <td>{{ loan.items.length }}</td>
+        <td>
+          <p-tag [value]="label(loan.status)" [severity]="severity(loan.status)" />
+        </td>
+        <td>
+          <p-button icon="pi pi-eye" text rounded title="Ver" (click)="open(loan)" />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="6" class="empty">Nenhum empréstimo encontrado.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

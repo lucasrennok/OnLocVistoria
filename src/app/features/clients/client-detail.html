@@ -1,0 +1,65 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Detalhes do cliente</h1>
+    <div class="header-actions">
+      <p-button label="Voltar" icon="pi pi-arrow-left" text (click)="back()" />
+      @if (client(); as c) {
+        <p-button label="Editar" icon="pi pi-pencil" (click)="edit()" />
+      }
+    </div>
+  </div>
+
+  @if (client(); as c) {
+    <p-card class="info-card">
+      <h2>{{ c.tradeName }}</h2>
+      <div class="info-grid">
+        <div class="info">
+          <span class="info-label">Responsável</span>
+          <span>{{ c.responsible }}</span>
+        </div>
+        <div class="info">
+          <span class="info-label">CPF/CNPJ</span>
+          <span>{{ c.document | cpfCnpj }}</span>
+        </div>
+        <div class="info">
+          <span class="info-label">Localização</span>
+          <span>{{ c.location }}</span>
+        </div>
+        <div class="info">
+          <span class="info-label">Cadastro</span>
+          <span>{{ c.createdAt | date: 'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+    </p-card>
+
+    <p-card class="history-card">
+      <ng-template #header>
+        <h3 class="card-title">Histórico de empréstimos</h3>
+      </ng-template>
+
+      <p-table [value]="loans()" [loading]="loading()" styleClass="shadow-1">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Organização</th>
+            <th>Data</th>
+            <th>Status</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-loan>
+          <tr>
+            <td>{{ loan.organization }}</td>
+            <td>{{ loan.date | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td>
+              <p-tag [value]="statusLabel(loan.status)" [severity]="statusSeverity(loan.status)" />
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="3" class="empty">Nenhum empréstimo registrado.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+  }
+</div>

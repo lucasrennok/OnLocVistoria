@@ -1,0 +1,52 @@
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <i class="pi pi-box"></i>
+      <span>On.loc</span>
+    </div>
+
+    <nav class="nav">
+      @for (item of visibleItems(); track item.route) {
+        <a
+          class="nav-item"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: false }"
+        >
+          <i class="{{ item.icon }}"></i>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <span class="page-title">Vistoria de Equipamentos</span>
+
+      <div class="user">
+        <p-avatar [label]="initials" shape="circle" />
+        <div class="user-meta">
+          <span class="user-name">{{ auth.user()?.name }}</span>
+          <small class="user-role">{{ auth.user()?.role }}</small>
+        </div>
+        <p-button
+          icon="pi pi-sign-out"
+          severity="secondary"
+          text
+          rounded
+          title="Sair"
+          aria-label="Sair"
+          (click)="logout()"
+        />
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+</div>
+
+<p-confirm-dialog />
+<p-toast position="top-right" />

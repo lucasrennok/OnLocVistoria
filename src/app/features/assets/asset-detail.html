@@ -1,0 +1,84 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Detalhes do equipamento</h1>
+    <div class="header-actions">
+      <p-button label="Voltar" icon="pi pi-arrow-left" text (click)="back()" />
+      @if (asset(); as a) {
+        <p-button label="Editar" icon="pi pi-pencil" (click)="edit()" />
+      }
+    </div>
+  </div>
+
+  @if (asset(); as a) {
+    <p-card class="info-card">
+      <div class="info-head">
+        <h2>{{ a.patrimonyNumber }}</h2>
+        <p-tag [value]="statusLabel(a.status)" [severity]="statusSeverity(a.status)" />
+      </div>
+      <div class="info-grid">
+        <div class="info">
+          <span class="info-label">Nº de série</span>
+          <span>{{ a.serialNumber || '—' }}</span>
+        </div>
+        <div class="info">
+          <span class="info-label">Descrição</span>
+          <span>{{ a.description }}</span>
+        </div>
+        <div class="info">
+          <span class="info-label">Sub-itens</span>
+          <span>{{ a.subItems.length }}</span>
+        </div>
+      </div>
+    </p-card>
+
+    <p-card class="section-card">
+      <ng-template #header><h3 class="card-title">Sub-itens</h3></ng-template>
+      <p-table [value]="a.subItems" styleClass="shadow-1">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Nome</th>
+            <th>Patrimônio</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+          <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.patrimonyNumber || '—' }}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="2" class="empty">Nenhum sub-item cadastrado.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+
+    <p-card class="section-card">
+      <ng-template #header><h3 class="card-title">Histórico de empréstimos</h3></ng-template>
+      <p-table [value]="loans()" [loading]="loading()" styleClass="shadow-1">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Organização</th>
+            <th>Data</th>
+            <th>Status</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-loan>
+          <tr>
+            <td>{{ loan.organization }}</td>
+            <td>{{ loan.date | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td>
+              <p-tag [value]="loanLabel(loan.status)" [severity]="loanSeverity(loan.status)" />
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="3" class="empty">Nenhum empréstimo registrado.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+  }
+</div>

@@ -1,0 +1,105 @@
+<div class="page form-page">
+  <div class="page-header">
+    <h1>{{ formTitle }}</h1>
+    <p-button label="Voltar" icon="pi pi-arrow-left" text (click)="cancel()" />
+  </div>
+
+  <p-card>
+    @if (loading()) {
+      <div class="loading">
+        <p-progressSpinner styleClass="w-2rem h-2rem" />
+      </div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="form-grid">
+          <div class="field">
+            <label for="patrimonyNumber">Número de patrimônio *</label>
+            <input id="patrimonyNumber" pInputText type="text" formControlName="patrimonyNumber" />
+            @if (patrimonyNumber.hasError('required') && patrimonyNumber.touched) {
+              <small class="error">Informe o patrimônio.</small>
+            }
+            @if (patrimonyNumber.hasError('patrimonyTaken') && patrimonyNumber.dirty) {
+              <small class="error">Este patrimônio já está cadastrado.</small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="serialNumber">Número de série</label>
+            <input id="serialNumber" pInputText type="text" formControlName="serialNumber" />
+          </div>
+
+          <div class="field">
+            <label for="status">Status *</label>
+            <p-select
+              id="status"
+              formControlName="status"
+              [options]="statusOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Selecione"
+            />
+          </div>
+
+          <div class="field span-2">
+            <label for="description">Descrição *</label>
+            <input id="description" pInputText type="text" formControlName="description" />
+            @if (description.invalid && description.touched) {
+              <small class="error">Informe a descrição.</small>
+            }
+          </div>
+        </div>
+
+        <div class="subitems">
+          <div class="subitems-header">
+            <h3>Sub-itens</h3>
+            <p-button
+              type="button"
+              label="Adicionar item"
+              icon="pi pi-plus"
+              severity="secondary"
+              text
+              (click)="addSubItem()"
+            />
+          </div>
+
+          @if (subItems.length === 0) {
+            <p class="subitems-empty">Nenhum sub-item adicionado.</p>
+          }
+
+          @for (item of subItems.controls; track index; let index = $index) {
+            <div class="subitem-row" [formGroup]="$any(item)">
+              <div class="field grow">
+                <label [for]="'name-' + index">Nome *</label>
+                <input [id]="'name-' + index" pInputText type="text" formControlName="name" />
+              </div>
+              <div class="field grow">
+                <label [for]="'pat-' + index">Patrimônio do item</label>
+                <input [id]="'pat-' + index" pInputText type="text" formControlName="patrimonyNumber" />
+              </div>
+              <p-button
+                type="button"
+                icon="pi pi-trash"
+                text
+                rounded
+                severity="danger"
+                title="Remover"
+                (click)="removeSubItem(index)"
+              />
+            </div>
+          }
+        </div>
+
+        <div class="actions">
+          <p-button type="button" label="Cancelar" severity="secondary" (click)="cancel()" />
+          <p-button
+            type="submit"
+            label="Salvar"
+            icon="pi pi-check"
+            [loading]="saving()"
+            [disabled]="form.pending"
+          />
+        </div>
+      </form>
+    }
+  </p-card>
+</div>
