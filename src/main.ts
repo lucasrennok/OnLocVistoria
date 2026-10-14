@@ -7,7 +7,7 @@ import { App } from './app/app';
  * mantenha `ENABLE_API_MOCKS = true`. Quando o backend real estiver no ar,
  * troque para `false` e o carregamento do worker será ignorado.
  */
-const ENABLE_API_MOCKS = true;
+const ENABLE_API_MOCKS = false;
 
 async function startApiMocks(): Promise<void> {
   if (!ENABLE_API_MOCKS) return;

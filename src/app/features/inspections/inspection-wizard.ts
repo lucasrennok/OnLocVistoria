@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { forkJoin, of, switchMap } from 'rxjs';
 
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
@@ -13,6 +14,7 @@ import { Textarea } from 'primeng/textarea';
 
 import { ClientsService } from '../../core/api/clients.service';
 import { InspectionsService, type InspectionPayload } from '../../core/api/inspections.service';
+import { UploadsService } from '../../core/api/uploads.service';
 import type { Client, Loan, PhotoEvidence } from '../../core/models/domain';
 import { compressImage } from '../../shared/utils/image-compress.util';
 
@@ -36,6 +38,7 @@ type Assessment = 'avaria_por_mau_uso' | 'sem_avaria';
 export class InspectionWizard {
   private readonly clientsService = inject(ClientsService);
   private readonly inspections = inject(InspectionsService);
+  private readonly uploads = inject(UploadsService);
   private readonly router = inject(Router);
   private readonly messages = inject(MessageService);
 
@@ -43,7 +46,8 @@ export class InspectionWizard {
 
   readonly clients = signal<Client[]>([]);
   readonly loans = signal<Loan[]>([]);
-  readonly photos = signal<PhotoEvidence[]>([]);
+  readonly photos = signal<PhotoEvidence[]>([]); // pré-visualização (blob:)
+  private files: File[] = []; // arquivos comprimidos, na mesma ordem de `photos`
 
   readonly loadingClients = signal(true);
   readonly loadingLoans = signal(false);
@@ -100,12 +104,15 @@ export class InspectionWizard {
     for (const file of files) {
       const compressed = await compressImage(file);
       const preview = URL.createObjectURL(compressed);
+      this.files.push(compressed);
       this.photos.update((p) => [...p, { url: preview }]);
     }
     this.compressing.set(false);
   }
 
   removePhoto(index: number): void {
+    URL.revokeObjectURL(this.photos()[index]?.url ?? '');
+    this.files.splice(index, 1);
     this.photos.update((p) => {
       const copy = [...p];
       copy.splice(index, 1);
@@ -148,41 +155,53 @@ export class InspectionWizard {
       ...i,
       returned: this.returnedItems[i.id] ?? i.returned
     }));
+    const assessment = this.assessment;
+    const clientId = this.selectedClientId;
 
-    const payload: InspectionPayload = {
-      clientId: this.selectedClientId,
-      loanId: loan.id,
-      date: new Date().toISOString(),
-      photos: this.photos().map((p) => ({ url: p.url, note: this.note })),
-      assessment: this.assessment,
-      items
-    };
+    // 1) envia as fotos ao storage (URL pré-assinada)  2) registra a vistoria com as URLs finais
+    const upload$ = this.files.length
+      ? forkJoin(this.files.map((f) => this.uploads.upload(f)))
+      : of([] as string[]);
 
-    if (this.assessment === 'avaria_por_mau_uso') {
-      payload.damages = [
-        {
-          loanItemId: this.damageItemId ?? loan.items[0]?.id ?? '',
-          description: this.damageDescription,
-          photos: this.photos().map((p) => p.url)
+    upload$
+      .pipe(
+        switchMap((urls) => {
+          const payload: InspectionPayload = {
+            clientId,
+            loanId: loan.id,
+            date: new Date().toISOString(),
+            photos: urls.map((url) => (this.note ? { url, note: this.note } : { url })),
+            assessment,
+            items
+          };
+
+          if (assessment === 'avaria_por_mau_uso') {
+            payload.damages = [
+              {
+                loanItemId: this.damageItemId ?? loan.items[0]?.id ?? '',
+                description: this.damageDescription,
+                photos: urls
+              }
+            ];
+          }
+          return this.inspections.create(payload);
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.submitting.set(false);
+          this.messages.add({ severity: 'success', summary: 'Vistoria registrada' });
+          void this.router.navigate(['/devolucoes']);
+        },
+        error: () => {
+          this.submitting.set(false);
+          this.messages.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Não foi possível registrar a vistoria.'
+          });
         }
-      ];
-    }
-
-    this.inspections.create(payload).subscribe({
-      next: () => {
-        this.submitting.set(false);
-        this.messages.add({ severity: 'success', summary: 'Vistoria registrada' });
-        void this.router.navigate(['/devolucoes']);
-      },
-      error: () => {
-        this.submitting.set(false);
-        this.messages.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Não foi possível registrar a vistoria.'
-        });
-      }
-    });
+      });
   }
 
   cancel(): void {

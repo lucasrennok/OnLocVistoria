@@ -42,16 +42,19 @@ npm run e2e          # end-to-end (Playwright) — requer `npx playwright instal
 npm run build        # gera dist/
 ```
 
-## Mocks de API
+## Integração com o backend (sem mocks)
 
-Os mocks (MSW) estão ativos via `ENABLE_API_MOCKS = true` em `src/main.ts`.
-Os endpoints ficam sob o prefixo `/api` e são definidos em `src/app/core/mocks/handlers.ts`.
+`ENABLE_API_MOCKS = false` em `src/main.ts`. Em desenvolvimento, o `ng serve` usa `proxy.conf.json`
+para encaminhar `/api/*` para `http://localhost:8080` (backend em Docker). Sem CORS a configurar.
 
-**Credenciais de exemplo:**
-- Analista: `analista@onloc.com.br` (qualquer senha)
-- Gestor: `gestor@onloc.com.br` (qualquer senha)
+1. Suba o backend (`docker compose up --build` na pasta da API; para upload de fotos, `docker compose --profile storage up`).
+2. `npm install` e `npm start` → http://localhost:4200
+3. Login (senha = `SEED_DEFAULT_PASSWORD` do `.env` do backend):
+   - Analista: `analista@onloc.com.br`
+   - Gestor: `gestor@onloc.com.br`
 
-Quando o backend real estiver disponível, troque a flag para `false`.
+Os mocks (MSW) continuam em `src/app/core/mocks/` e podem ser religados trocando a flag para `true`.
+Se o navegador ainda interceptar chamadas, desregistre o service worker (DevTools → Application → Service Workers).
 
 ## Documentação
 

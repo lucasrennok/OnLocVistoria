@@ -5,7 +5,7 @@ import { map, Observable } from 'rxjs';
 import { API_BASE } from './api-base';
 import type { Role, User } from '../models/domain';
 
-export type UserPayload = Omit<User, 'id'>;
+export type UserPayload = Omit<User, 'id'> & { password?: string };
 
 @Injectable({ providedIn: 'root' })
 export class UsersService {

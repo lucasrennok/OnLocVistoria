@@ -36,6 +36,7 @@ export class UserForm {
   readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required]],
     email: ['', { validators: [Validators.required, Validators.email], asyncValidators: [this.emailTaken] }],
+    password: ['', [Validators.required, Validators.minLength(8)]],
     role: ['Analista' as Role, [Validators.required]]
   });
 
@@ -45,6 +46,10 @@ export class UserForm {
 
   get email() {
     return this.form.controls.email;
+  }
+
+  get password() {
+    return this.form.controls.password;
   }
 
   submit(): void {

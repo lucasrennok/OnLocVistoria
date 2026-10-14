@@ -3,12 +3,16 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 
+import { API_BASE } from '../api/api-base';
 import { AuthService } from '../auth/auth.service';
 
 /** Trata erros globais: 401 → login; 403 → tela de acesso negado. */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const router = inject(Router);
+
+  // Erros de outros hosts (ex.: storage S3) não devem derrubar a sessão
+  if (!req.url.startsWith(API_BASE)) return next(req);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {

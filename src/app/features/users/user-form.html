@@ -26,6 +26,14 @@
       </div>
 
       <div class="field">
+        <label for="password">Senha *</label>
+        <input id="password" pInputText type="password" formControlName="password" autocomplete="new-password" />
+        @if (password.invalid && password.touched) {
+          <small class="error">A senha deve ter ao menos 8 caracteres.</small>
+        }
+      </div>
+
+      <div class="field">
         <label for="role">Papel *</label>
         <p-select
           id="role"
@@ -36,8 +44,6 @@
           placeholder="Selecione"
         />
       </div>
-
-      <p class="hint">A senha será definida em um fluxo separado (tabela de senhas criptografadas).</p>
 
       <div class="actions">
         <p-button type="button" label="Cancelar" severity="secondary" (click)="cancel()" />
