@@ -10,6 +10,8 @@ export interface LoanFilters {
   clientId?: string;
 }
 
+export type LoanPayload = Omit<Loan, 'id'>;
+
 @Injectable({ providedIn: 'root' })
 export class LoansService {
   private readonly http = inject(HttpClient);
@@ -23,5 +25,9 @@ export class LoansService {
 
   get(id: string): Observable<Loan> {
     return this.http.get<Loan>(`${API_BASE}/loans/${id}`);
+  }
+
+  create(payload: LoanPayload): Observable<Loan> {
+    return this.http.post<Loan>(`${API_BASE}/loans`, payload);
   }
 }

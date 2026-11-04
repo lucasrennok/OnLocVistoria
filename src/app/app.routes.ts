@@ -55,6 +55,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/loans/loans').then((m) => m.Loans)
       },
       {
+        path: 'emprestimos/novo',
+        loadComponent: () => import('./features/loans/loan-form').then((m) => m.LoanForm)
+      },
+      {
         path: 'emprestimos/:id',
         loadComponent: () => import('./features/loans/loan-detail').then((m) => m.LoanDetail)
       },

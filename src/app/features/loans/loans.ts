@@ -80,4 +80,8 @@ export class Loans {
   open(loan: Loan): void {
     void this.router.navigate(['/emprestimos', loan.id]);
   }
+
+  newLoan(): void {
+    void this.router.navigate(['/emprestimos/novo']);
+  }
 }

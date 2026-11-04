@@ -1,0 +1,127 @@
+<div class="page form-page">
+  <div class="page-header">
+    <h1>Novo empréstimo</h1>
+    <p-button label="Voltar" icon="pi pi-arrow-left" text (click)="cancel()" />
+  </div>
+
+  <p-card>
+    @if (loading()) {
+      <div class="loading">
+        <p-progressSpinner styleClass="w-2rem h-2rem" />
+      </div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="form-grid">
+          <div class="field">
+            <label for="clientId">Cliente *</label>
+            <p-select
+              inputId="clientId"
+              formControlName="clientId"
+              [options]="clients()"
+              optionLabel="tradeName"
+              optionValue="id"
+              placeholder="Selecione o cliente"
+            />
+            @if (clientId.invalid && clientId.touched) {
+              <small class="error">Selecione o cliente.</small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="organization">Organização</label>
+            <input id="organization" pInputText type="text" formControlName="organization" />
+            @if (organization.invalid && organization.touched) {
+              <small class="error">Informe a organização.</small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="date">Data *</label>
+            <input id="date" pInputText type="datetime-local" formControlName="date" />
+          </div>
+
+          <div class="field">
+            <label for="status">Status *</label>
+            <p-select
+              inputId="status"
+              formControlName="status"
+              [options]="statusOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Selecione"
+            />
+          </div>
+
+          <div class="field span-2">
+            <label for="details">Detalhes</label>
+            <textarea
+              id="details"
+              pTextarea
+              formControlName="details"
+              rows="3"
+              placeholder="Observações sobre o empréstimo…"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="subitems">
+          <div class="subitems-header">
+            <h3>Itens emprestados</h3>
+            <p-button
+              type="button"
+              label="Adicionar item"
+              icon="pi pi-plus"
+              severity="secondary"
+              text
+              (click)="addItem()"
+            />
+          </div>
+
+          @if (items.length === 0) {
+            <p class="subitems-empty">Nenhum item adicionado.</p>
+          }
+
+          @for (item of items.controls; track index; let index = $index) {
+            <div class="subitem-row" [formGroup]="$any(item)">
+              <div class="field grow">
+                <label [for]="'asset-' + index">Equipamento *</label>
+                <p-select
+                  [inputId]="'asset-' + index"
+                  formControlName="assetId"
+                  [options]="assets()"
+                  optionLabel="patrimonyNumber"
+                  optionValue="id"
+                  placeholder="Selecione o equipamento"
+                />
+                @if (assetControl(index).invalid && assetControl(index).touched) {
+                  <small class="error">Selecione o equipamento.</small>
+                }
+              </div>
+         
+              <p-button
+                type="button"
+                icon="pi pi-trash"
+                text
+                rounded
+                severity="danger"
+                title="Remover"
+                (click)="removeItem(index)"
+              />
+            </div>
+          }
+        </div>
+
+        <div class="actions">
+          <p-button type="button" label="Cancelar" severity="secondary" (click)="cancel()" />
+          <p-button
+            type="submit"
+            label="Salvar"
+            icon="pi pi-check"
+            [loading]="saving()"
+            [disabled]="form.pending"
+          />
+        </div>
+      </form>
+    }
+  </p-card>
+</div>
